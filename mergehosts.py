@@ -20,6 +20,7 @@ parser.add_argument("-v", "--verbose", help="Defines the verbosity level", actio
 parser.add_argument("-l", "--local", help="Local hosts file containing one hostname per line (default value=local.hosts)", type=argparse.FileType('r'), default="local.hosts", dest="local_hosts")
 parser.add_argument("-u", "--untrusted", help="Untrusted hosts file containing one hostname per line (default value=untrusted.hosts)", type=argparse.FileType('r'), default="untrusted.hosts", dest="untrusted_hosts")
 parser.add_argument("-hc", "--hard", help="Hard coded hosts file formatted as <ip> <hostname> (default value=hardcoded.hosts)", type=argparse.FileType('r'), default="hardcoded.hosts", dest="hard_coded")
+parser.add_argument("-e",  "--external", help="File containing the external hosts formatted as <ip> <hostname>", type=argparse.FileType('r'), default="hosts.txt", dest="external_hosts")
 parser.add_argument("-d", "--destination", help="Destination file (default value=/tmp/mergehosts.whatif)", default="/tmp/mergehosts.whatif", type=argparse.FileType('w+'), dest="destination_file")
 parser.add_argument('--version', action='version', version='%(prog)s 0.1')
 args = parser.parse_args()
@@ -30,6 +31,7 @@ def print_argument_values():
         print "args.local_hosts = [", args.local_hosts, "]"
         print "args.untrusted_hosts = [", args.untrusted_hosts, "]"
         print "args.hard_coded = [", args.hard_coded, "]"
+        print "args.external_hosts = [", args.external_hosts, "]"
         print "args.destination_file = [", args.destination_file, "]"
 
 def get_temp_file():
