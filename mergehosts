@@ -1,0 +1,30 @@
+#!/bin/bash
+# This script merges a hosts file with local, trusted and untrusted hosts
+# usage: ./mergeshosts [-v[erbose]]]
+
+print_usage()
+{
+	echo Merges hosts file together
+	echo usage: ./mergehosts [-v[erbose]]
+}
+
+get_verbosity()
+{
+	verbose=`if [ "$1" = "-v" ] || [ "$1" = "-verbose" ]
+	then
+		echo 1
+	else
+		echo 0
+	fi`
+}
+
+get_verbosity $1
+if [ $verbose = 1 ]
+then
+	print_usage
+fi
+
+# local hosts go first
+tmptarget=/tmp/mergehosts`echo $RANDOM`
+
+
