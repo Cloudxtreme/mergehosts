@@ -47,17 +47,24 @@ def get_temp_file():
 
     return open(tmp_file_path, "w+")
 
+def write_section_title(destination,  title):
+    if args.verbose >= VERBOSITY_INFO:
+        print "Adding " + title + "..."
+
+    destination.write("#\n# ")
+    destination.write(title)
+    destination.write("\n")
+    destination.write("#\n")
+
+
 def write_entry(destination, hostname, ipvalue):
-            destination.write(ipvalue)
-            destination.write("\t")
-            destination.write(hostname)
-            destination.write("\n")
+    destination.write(ipvalue)
+    destination.write("\t")
+    destination.write(hostname)
+    destination.write("\n")
 
 def append_local_hosts(destination):
-    if args.verbose >= VERBOSITY_INFO:
-        print "Adding Local Hosts (all directed to 127.0.0.1 and ::1)..."
-
-    destination.write("# Local Hosts\n")
+    write_section_title(destination, "Local Hosts")
     for line in args.local_hosts:
         line = line.strip()
         if line != "" and line[0] != "#":
@@ -67,10 +74,7 @@ def append_local_hosts(destination):
     args.local_hosts.close()
 
 def append_untrusted_hosts(destination):
-    if args.verbose >= VERBOSITY_INFO:
-        print "Adding Untrusted Hosts..."
-
-    destination.write("# Untrusted Hosts\n")
+    write_section_title(destination, "Untrusted Hosts")
     for line in args.untrusted_hosts:
         line = line.strip()
         if line != "" and line[0] != "#":
@@ -79,10 +83,7 @@ def append_untrusted_hosts(destination):
     args.untrusted_hosts.close()
 
 def append_hardcoded_hosts(destination):
-    if args.verbose >= VERBOSITY_INFO:
-        print "Adding Hardcoded Hosts..."
-
-    destination.write("# Hard Coded Hosts\n")
+    write_section_title(destination, "Hard Coded Hosts")
     for line in args.hard_coded:
         line = line.strip()
         if line != "" and line[0] != '#':
@@ -92,10 +93,7 @@ def append_hardcoded_hosts(destination):
     args.hard_coded.close()
 
 def append_external_hosts(destination):
-    if args.verbose >= VERBOSITY_INFO:
-        print "Adding External Hosts..."
-
-    destination.write("# External Hosts\n")
+    write_section_title(destination, "External Hosts")
     for line in args.external_hosts:
         line = line.strip()
         if line != "" and line[0] != '#':
