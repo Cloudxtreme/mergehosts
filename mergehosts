@@ -1,6 +1,8 @@
 #!/bin/bash
 # This script merges a hosts file with local, trusted and untrusted hosts
 # usage: ./mergeshosts [-v[erbose]]]
+#
+# Author: Thomas Delrue
 
 print_usage()
 {
