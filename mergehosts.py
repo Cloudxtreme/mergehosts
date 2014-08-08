@@ -15,6 +15,9 @@ VERBOSITY_WARN = 2
 VERBOSITY_INFO = 3
 VERBOSITY_VERBOSE = 4
 
+SINKHOLE = "0.0.0.0"
+LOCALADDRESSES = { "127.0.0.1",  "::1" }
+
 parser = argparse.ArgumentParser(description="MergeHosts merges a hosts file with local, hard-coded and untrusted hosts")
 parser.add_argument("-v", "--verbose", help="Defines the verbosity level", action="count", default=0)
 parser.add_argument("-l", "--local", help="Local hosts file containing one hostname per line (default value=local.hosts)", type=argparse.FileType('r'), default="local.hosts", dest="local_hosts")
@@ -68,8 +71,8 @@ def append_local_hosts(destination):
     for line in args.local_hosts:
         line = line.strip()
         if line != "" and line[0] != "#":
-            write_entry(destination, line, "127.0.0.1")
-            write_entry(destination, line, "::1\t")
+            for local_address in LOCALADDRESSES:
+                write_entry(destination, line, local_address)
 
     args.local_hosts.close()
 
@@ -78,7 +81,7 @@ def append_untrusted_hosts(destination):
     for line in args.untrusted_hosts:
         line = line.strip()
         if line != "" and line[0] != "#":
-            write_entry(destination, line, "0.0.0.0")
+            write_entry(destination, line, SINKHOLE)
 
     args.untrusted_hosts.close()
 
