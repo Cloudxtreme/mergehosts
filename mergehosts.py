@@ -9,6 +9,7 @@ parser.add_argument("-v", "--verbose", help="Defines the verbosity level", actio
 parser.add_argument("-l", "--local", help="Local hosts file containing one hostname per line (default value=local.hosts)", default="local.hosts", dest="local_hosts")
 parser.add_argument("-u", "--untrusted", help="Untrusted hosts file containing one hostname per line (default value=untrusted.hosts)", default="untrusted.hosts", dest="untrusted_hosts")
 parser.add_argument("-hc", "--hard", help="Hard coded hosts file formatted as <ip> <hostname> (default value=hardcoded.hosts)", default="hardcoded.hosts", dest="hard_coded")
+parser.add_argument('--version', action='version', version='%(prog)s 0.1')
 args = parser.parse_args()
 
 print "args.verbose = [", args.verbose, "]"
