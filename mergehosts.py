@@ -100,8 +100,9 @@ def append_external_hosts(destination):
     for line in args.external_hosts:
         line = line.strip()
         if line != "" and line[0] != '#':
-            destination.write(line)
-            destination.write('\n');
+            normalized = line.replace('\t',  ' ').split(' ',  1)
+            if normalized[1].split(' ',  1)[0].lower() != "localhost":
+                write_entry(destination, normalized[1].strip(), SINKHOLE)
 
     args.external_hosts.close()
 
