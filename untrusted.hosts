@@ -1,6 +1,6 @@
 # Untrusted Hosts
 # ------------------------
-# Add untrusted hosts to this file with one host per line
+# Add untrusted hosts to this file with one host per line:
 # <hostname>
 
 www.facebook.com
