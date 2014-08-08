@@ -122,7 +122,9 @@ def main():
     append_external_hosts(tmpFile)
     tmpFile.close()
 
+    # commit the content
     shutil.copyfile(tmpFile.name,  args.destination_file.name)
+    os.remove(tmpFile.name)
 
 if __name__ == '__main__':
     main()
