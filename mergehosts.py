@@ -6,6 +6,7 @@
 import argparse
 import os
 import random
+import shutil
 import sys
 import time
 
@@ -13,60 +14,55 @@ VERBOSITY_ERR = 1
 VERBOSITY_WARN = 2
 VERBOSITY_INFO = 3
 VERBOSITY_VERBOSE = 4
-DBG_TARGET_FILE = "/tmp/mergehosts.whatif"
 
 parser = argparse.ArgumentParser(description="MergeHosts merges a hosts file with local, hard-coded and untrusted hosts")
 parser.add_argument("-v", "--verbose", help="Defines the verbosity level", action="count", default=0)
-parser.add_argument("-l", "--local", help="Local hosts file containing one hostname per line (default value=local.hosts)", default="local.hosts", dest="local_hosts")
-parser.add_argument("-u", "--untrusted", help="Untrusted hosts file containing one hostname per line (default value=untrusted.hosts)", default="untrusted.hosts", dest="untrusted_hosts")
-parser.add_argument("-hc", "--hard", help="Hard coded hosts file formatted as <ip> <hostname> (default value=hardcoded.hosts)", default="hardcoded.hosts", dest="hard_coded")
-parser.add_argument("-d", "--debug", help="Run in debugging mode, this makes the script run exactly as normal but instead of touching the hosts file itself, it produces its output in the file '" + DBG_TARGET_FILE + "'", default=False,  action="store_true")
+parser.add_argument("-l", "--local", help="Local hosts file containing one hostname per line (default value=local.hosts)", type=argparse.FileType('r'), default="local.hosts", dest="local_hosts")
+parser.add_argument("-u", "--untrusted", help="Untrusted hosts file containing one hostname per line (default value=untrusted.hosts)", type=argparse.FileType('r'), default="untrusted.hosts", dest="untrusted_hosts")
+parser.add_argument("-hc", "--hard", help="Hard coded hosts file formatted as <ip> <hostname> (default value=hardcoded.hosts)", type=argparse.FileType('r'), default="hardcoded.hosts", dest="hard_coded")
+parser.add_argument("-d", "--destination", help="Destination file (default value=/tmp/mergehosts.whatif)", default="/tmp/mergehosts.whatif", type=argparse.FileType('w+'), dest="destination_file")
 parser.add_argument('--version', action='version', version='%(prog)s 0.1')
 args = parser.parse_args()
 
 def print_argument_values():
     if args.verbose >= VERBOSITY_VERBOSE:
-        print "args.debug = [", args.debug, "]"
         print "args.verbose = [", args.verbose, "]"
         print "args.local_hosts = [", args.local_hosts, "]"
         print "args.untrusted_hosts = [", args.untrusted_hosts, "]"
         print "args.hard_coded = [", args.hard_coded, "]"
+        print "args.destination_file = [", args.destination_file, "]"
 
 def get_temp_file():
     keepTrying = True
 
-    if args.debug == False:
-        # naive way of finding random temporary file name
-        while keepTrying == True:
-            tmp_file_path = "/tmp/mergehosts" + str(time.time()).replace('.', '') + ".hosts"
-            keepTrying = os.path.isfile(tmp_file_path)
-    else:
-        tmp_file_path = DBG_TARGET_FILE
+    # naive way of finding random temporary file name
+    while keepTrying == True:
+        tmp_file_path = "/tmp/mergehosts" + str(time.time()).replace('.', '') + ".hosts"
+        keepTrying = os.path.isfile(tmp_file_path)
 
     if args.verbose >= VERBOSITY_VERBOSE:
         print "Temporary hosts file: " + tmp_file_path
 
     return open(tmp_file_path, "w+")
 
-def append_file_with_only_hostnames(source, destination, content_type, ip_value):
-    if args.verbose >= VERBOSITY_INFO:
-        print "Adding " + content_type + " hosts (all directed to " + ip_value + ")..."
-
-    destination.write("# " + content_type + " Hosts\n")
-    sourceFile = open(source,  "r")
-    for line in sourceFile:
-        line = line.strip()
-        if line != "" and line[0] != "#":
-            destination.write(ip_value)
+def write_entry(destination, hostname, ipvalue):
+            destination.write(ipvalue)
             destination.write("\t")
-            destination.write(line)
+            destination.write(hostname)
             destination.write("\n")
 
-    sourceFile.close()
-
 def append_local_hosts(destination):
-    append_file_with_only_hostnames(args.local_hosts,  destination, "Local (IPv4)", "127.0.0.1")
-    append_file_with_only_hostnames(args.local_hosts,  destination, "Local (IPv6)", "::1")
+    if args.verbose >= VERBOSITY_INFO:
+        print "Adding Local Hosts (all directed to 127.0.0.1 and ::1)..."
+
+    destination.write("# Local Hosts\n")
+    for line in args.local_hosts:
+        line = line.strip()
+        if line != "" and line[0] != "#":
+            write_entry(destination, line, "127.0.0.1")
+            write_entry(destination, line, "::1\t")
+
+    args.local_hosts.close()
 
 def append_hardcoded_hosts(destination):
     if args.verbose >= VERBOSITY_INFO:
@@ -79,6 +75,10 @@ def append_untrusted_hosts(destination):
         print "Adding Untrusted Hosts..."
 
     destination.write("# Untrusted hosts\n")
+    for line in args.untrusted_hosts:
+        line = line.strip()
+        if line != "" and line[0] != "#":
+            write_entry(destination, line, "0.0.0.0")
 
 def append_external_hosts(destination):
     if args.verbose >= VERBOSITY_INFO:
@@ -102,4 +102,7 @@ def main():
     append_external_hosts(tmpFile)
     tmpFile.close()
 
-main()
+    shutil.copyfile(tmpFile.name,  args.destination_file.name)
+
+if __name__ == '__main__':
+    main()
