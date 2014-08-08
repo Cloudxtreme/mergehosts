@@ -4,6 +4,16 @@
 # Author: Thomas Delrue
 
 import argparse
+import os.path
+import random
+import sys
+import time
+
+VERBOSITY_ERR = 1
+VERBOSITY_WARN = 2
+VERBOSITY_INFO = 3
+VERBOSITY_VERBOSE = 4
+
 parser = argparse.ArgumentParser(description="MergeHosts merges a hosts file with local, hard-coded and untrusted hosts")
 parser.add_argument("-v", "--verbose", help="Defines the verbosity level", action="count", default=0)
 parser.add_argument("-l", "--local", help="Local hosts file containing one hostname per line (default value=local.hosts)", default="local.hosts", dest="local_hosts")
@@ -12,8 +22,22 @@ parser.add_argument("-hc", "--hard", help="Hard coded hosts file formatted as <i
 parser.add_argument('--version', action='version', version='%(prog)s 0.1')
 args = parser.parse_args()
 
-print "args.verbose = [", args.verbose, "]"
-print "args.local_hosts = [", args.local_hosts, "]"
-print "args.untrusted_hosts = [", args.untrusted_hosts, "]"
-print "args.hard_coded = [", args.hard_coded, "]"
+def print_argument_values():
+    if args.verbose >= VERBOSITY_VERBOSE:
+        print "args.verbose = [", args.verbose, "]"
+        print "args.local_hosts = [", args.local_hosts, "]"
+        print "args.untrusted_hosts = [", args.untrusted_hosts, "]"
+        print "args.hard_coded = [", args.hard_coded, "]"
 
+def get_temp_file():
+    result = "/tmp/mergehosts" + str(time.time()).replace('.', '')
+    if args.verbose >= VERBOSITY_INFO:
+        print "Temporary hosts file: " + result
+
+    return result
+
+def main():
+    print_argument_values()
+    tmpFile = get_temp_file()
+
+main()
