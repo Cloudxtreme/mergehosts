@@ -66,27 +66,43 @@ def append_local_hosts(destination):
 
     args.local_hosts.close()
 
-def append_hardcoded_hosts(destination):
-    if args.verbose >= VERBOSITY_INFO:
-        print "Adding Hardcoded Hosts..."
-
-    destination.write("# Hard coded hosts\n")
-
 def append_untrusted_hosts(destination):
     if args.verbose >= VERBOSITY_INFO:
         print "Adding Untrusted Hosts..."
 
-    destination.write("# Untrusted hosts\n")
+    destination.write("# Untrusted Hosts\n")
     for line in args.untrusted_hosts:
         line = line.strip()
         if line != "" and line[0] != "#":
             write_entry(destination, line, "0.0.0.0")
 
+    args.untrusted_hosts.close()
+
+def append_hardcoded_hosts(destination):
+    if args.verbose >= VERBOSITY_INFO:
+        print "Adding Hardcoded Hosts..."
+
+    destination.write("# Hard Coded Hosts\n")
+    for line in args.hard_coded:
+        line = line.strip()
+        if line != "" and line[0] != '#':
+            destination.write(line)
+            destination.write('\n')
+
+    args.hard_coded.close()
+
 def append_external_hosts(destination):
     if args.verbose >= VERBOSITY_INFO:
         print "Adding External Hosts..."
 
-    destination.write("# External hosts\n")
+    destination.write("# External Hosts\n")
+    for line in args.external_hosts:
+        line = line.strip()
+        if line != "" and line[0] != '#':
+            destination.write(line)
+            destination.write('\n');
+
+    args.external_hosts.close()
 
 def main():
     print_argument_values()
