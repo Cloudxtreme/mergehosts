@@ -39,7 +39,10 @@ def INFO(value):
 
 def WARN(value):
     if args.verbose >= VERBOSITY_WARN:
-        print value
+        sys.stderr.write("WARNING: " + str(value) + "\n")
+
+def ERR(value):
+    sys.stderr.write("ERROR: " + str(value) + "\n")
 
 def print_argument_values():
     VERBOSE("args.verbose          = [" + str(args.verbose) + "]")
