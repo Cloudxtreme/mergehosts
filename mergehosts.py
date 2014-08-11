@@ -7,6 +7,7 @@ import argparse
 import os
 import random
 import shutil
+import socket
 import sys
 import time
 
@@ -16,11 +17,11 @@ VERBOSITY_INFO = 2
 VERBOSITY_VERBOSE = 3
 
 SINKHOLE = "0.0.0.0"
-LOCALADDRESSES = { "127.0.0.1",  "::1" }
+LOCALADDRESSES = set(["127.0.0.1", "::1"])
+LOCALHOSTS = set(["localhost", socket.gethostname()])
 
 parser = argparse.ArgumentParser(description="MergeHosts merges a hosts file with local, hard-coded and untrusted hosts")
 parser.add_argument("-v", "--verbose", help="Defines the verbosity level", action="count", default=0)
-parser.add_argument("-l", "--local", metavar="<local>", help="Local hosts file containing one hostname per line (default value=local.hosts)", type=argparse.FileType('rt'), default="local.hosts", dest="local_hosts")
 parser.add_argument("-u", "--untrusted", metavar="<untrusted>", help="Untrusted hosts file containing one hostname per line (default value=untrusted.hosts)", type=argparse.FileType('rt'), default="untrusted.hosts", dest="untrusted_hosts")
 parser.add_argument("-hc", "--hard", metavar="<hard>", help="Hard coded hosts file formatted as <ip> <hostname> (default value=hardcoded.hosts)", type=argparse.FileType('rt'), default="hardcoded.hosts", dest="hard_coded")
 parser.add_argument("-e",  "--external", metavar="<external>", help="File containing the external hosts formatted as <ip> <hostname>", type=argparse.FileType('rt'), default="hosts.txt", dest="external_hosts")
@@ -42,9 +43,8 @@ def WARN(value):
 
 def print_argument_values():
     VERBOSE("args.verbose          = [" + str(args.verbose) + "]")
-    VERBOSE("args.local_hosts      = [" + str(args.local_hosts) + "]")
-    VERBOSE("args.untrusted_hosts  = [" + str(args.untrusted_hosts) + "]")
     VERBOSE("args.hard_coded       = [" + str(args.hard_coded) + "]")
+    VERBOSE("args.untrusted_hosts  = [" + str(args.untrusted_hosts) + "]")
     VERBOSE("args.external_hosts   = [" + str(args.external_hosts) + "]")
     VERBOSE("args.destination_file = [" + str(args.destination_file) + "]")
 
@@ -76,52 +76,61 @@ def write_entry(destination, hostname, ipvalue):
     destination.write("\n")
 
 def report_dupe_host(hostname, source):
-    WARN("Duplicate host '" + hostname + "' (from " + source + ")")
+    WARN("Duplicate host '" + hostname + "' (duplicate in " + source + ")")
+
+def ignore_line(line):
+    return line == "" or line[0] == '#'
 
 def append_local_hosts(source, destination, hosts):
     write_section_title(destination, "Local Hosts")
+
     for line in source:
-        line = line.strip()
-        if line != "" and line[0] != "#":
-            for local_address in LOCALADDRESSES:
-                write_entry(destination, line, local_address)
-                hosts[line] = 1     # when there are multiple LOCALADDRESSES, then yes this will be done multiple times for the same host
+        hostname = line.strip()
+        if ignore_line(hostname) == False:
+            if hosts.get(hostname) == None:
+                for local_address in LOCALADDRESSES:
+                    write_entry(destination, hostname, local_address)
+            hosts[line] = 1
 
 def append_untrusted_hosts(source, destination, hosts):
     write_section_title(destination, "Untrusted Hosts")
+
     for line in source:
         hostname = line.strip()
-        if hostname != "" and hostname[0] != "#":
+        if ignore_line(hostname) == False:
             if hosts.get(hostname) == None:
                 write_entry(destination, hostname, SINKHOLE)
                 hosts[hostname] = 1
             else:
                 report_dupe_host(hostname, "untrusted")
 
-def append_hardcoded_hosts(source, destination, hosts):
-    write_section_title(destination, "Hard Coded Hosts")
-    for line in source:
-        line = line.strip()
-        # TODO: extract hostname for dupe validation
-        if line != "" and line[0] != '#':
-            destination.write(line)
-            destination.write('\n')
+def process_tuple_file(name, source, destination, hosts, use_sinkhole):
+    write_section_title(destination, name + " Hosts")
+    for entry in source:
+        line = entry
+        # strip comments if any
+        pound_index = line.find('#')
+        if pound_index >= 0:
+            line = line[:pound_index]
+        
+        line = line.replace('\t', ' ').strip()
+        if line != "":
+            # split in IP and host name
+            split = line.split(' ', 1)
+            if len(split) == 2:
+                split[1] = split[1].strip()
 
-def append_external_hosts(source, destination, hosts):
-    write_section_title(destination, "External Hosts")
-    for line in source:
-        line = line.strip()
-        if line != "" and line[0] != '#':
-            line = line.replace('\t',  ' ').split(' ',  1)[1].split(' ',  1)[0].strip()
-            # note that some of these files explicitly define 'localhost'
-            # in this script this is dealt with in the local.hosts file
-            # so there is no need for us to re-add local hosts
-            if line != "localhost":
-                if hosts.get(line) == None:
-                    write_entry(destination, line, SINKHOLE)
-                    hosts[line] = 1
+                # since we do localhosts first, they will never be coded to another machine or to the sinkhole
+                if hosts.get(split[1]) == None:
+                    hosts[split[1]] = 1
+                    if use_sinkhole == False:
+                        write_entry(destination, split[1], split[0])
+                    else:
+                        write_entry(destination, split[1], SINKHOLE)
                 else:
-                    report_dupe_host(line, "external");
+                    report_dupe_host(split[1], name)
+            else:
+                exit("The " + name + " hosts file contains an incorrectly formed line \"" + entry[:len(entry) - 2] + "\"")
 
 def main():
     print_argument_values()
@@ -135,16 +144,15 @@ def main():
     tmpFile.write("# Hosts file generated by MergeHosts (" + time.asctime() + ")\n")
 
     hosts = { }
-    append_local_hosts(args.local_hosts, tmpFile, hosts)
-    args.local_hosts.close()
+    append_local_hosts(LOCALHOSTS, tmpFile, hosts)
 
-    append_hardcoded_hosts(args.hard_coded, tmpFile, hosts)
+    process_tuple_file("Hard Coded", args.hard_coded, tmpFile, hosts, False)
     args.hard_coded.close()
 
     untrusted = append_untrusted_hosts(args.untrusted_hosts, tmpFile, hosts)
     args.untrusted_hosts.close()
 
-    append_external_hosts(args.external_hosts, tmpFile, hosts)
+    process_tuple_file("External", args.external_hosts, tmpFile, hosts, True)
     args.external_hosts.close()
 
     tmpFile.close()
