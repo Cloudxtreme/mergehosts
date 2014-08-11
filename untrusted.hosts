@@ -1,0 +1,12 @@
+# Untrusted Hosts
+# ------------------------
+# Add untrusted hosts to this file with one host per line:
+# <hostname>
+
+# facebook
+mi-reroute.fbcdn.net
+origincache-frc.fbcdn.net
+profile.facebook.com
+star.c10r.facebook.com
+www.facebook.com
+

@@ -1,0 +1,5 @@
+# Trusted/Hard Coded Hosts
+# ------------------------
+# Add hard coded hosts to this file in the following format:
+# <IP Address>	<hostname>
+
