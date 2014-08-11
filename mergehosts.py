@@ -76,7 +76,7 @@ def write_entry(destination, hostname, ipvalue):
     destination.write("\n")
 
 def report_dupe_host(hostname, source):
-    WARN("Duplicate host '" + hostname + "' (duplicate in " + source + ")")
+    WARN("Duplicate host '" + hostname + "' (duplicate in " + source + " hosts)")
 
 def ignore_line(line):
     return line == "" or line[0] == '#'
