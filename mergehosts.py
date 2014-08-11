@@ -8,6 +8,7 @@ import random
 import shutil
 import socket
 import sys
+import tempfile
 import time
 
 VERBOSITY_ERR = 0
@@ -48,13 +49,7 @@ def print_argument_values():
     VERBOSE("args.destination_file = [" + str(args.destination_file) + "]")
 
 def get_temp_file():
-    again = True
-
-    # naive way of finding random temporary file name
-    while again == True:
-        tmp_file_path = "/tmp/mergehosts" + str(time.time()).replace('.', '') + ".hosts"
-        again = os.path.isfile(tmp_file_path)
-
+    tmp_file_path = tempfile.mkstemp()[1]
     VERBOSE("Temporary hosts file: " + tmp_file_path)
 
     return open(tmp_file_path, "w+")
