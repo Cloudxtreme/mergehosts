@@ -72,8 +72,11 @@ def write_section_title(destination,  title):
 def write_entry(destination, hostname, ipvalue):
     destination.write(ipvalue)
     destination.write("\t")
-    destination.write(hostname)
+    destination.write(hostname.lower())
     destination.write("\n")
+
+def report_dupe_host(hostname, source):
+    WARN("Duplicate host '" + hostname + "' (from " + source + ")")
 
 def append_local_hosts(source, destination, hosts):
     write_section_title(destination, "Local Hosts")
@@ -84,13 +87,10 @@ def append_local_hosts(source, destination, hosts):
                 write_entry(destination, line, local_address)
                 hosts[line] = 1     # when there are multiple LOCALADDRESSES, then yes this will be done multiple times for the same host
 
-def report_dupe_host(hostname, source):
-    WARN("Duplicate host '" + hostname + "' (from " + source + ")")
-
 def append_untrusted_hosts(source, destination, hosts):
     write_section_title(destination, "Untrusted Hosts")
     for line in source:
-        hostname = line.strip().lower()
+        hostname = line.strip()
         if hostname != "" and hostname[0] != "#":
             if hosts.get(hostname) == None:
                 write_entry(destination, hostname, SINKHOLE)
@@ -110,7 +110,7 @@ def append_hardcoded_hosts(source, destination, hosts):
 def append_external_hosts(source, destination, hosts):
     write_section_title(destination, "External Hosts")
     for line in source:
-        line = line.strip().lower()
+        line = line.strip()
         if line != "" and line[0] != '#':
             line = line.replace('\t',  ' ').split(' ',  1)[1].split(' ',  1)[0].strip()
             # note that some of these files explicitly define 'localhost'
