@@ -29,21 +29,40 @@ parser.add_argument("-d", "--destination", metavar="<dest>", help="Destination f
 parser.add_argument('--version', action='version', version='%(prog)s 0.1')
 args = parser.parse_args()
 
+'''
+Outputs verbose information
+    @value: value to display
+'''
 def VERBOSE(value):
     if args.verbose >= VERBOSITY_VERBOSE:
         print value
 
+'''
+Outputs informational information
+    @value: value to display
+'''
 def INFO(value):
     if args.verbose >= VERBOSITY_INFO:
         print value
 
+'''
+Outputs warning information
+    @value: value to display
+'''
 def WARN(value):
     if args.verbose >= VERBOSITY_WARN:
         sys.stderr.write("WARNING: " + str(value) + "\n")
 
+'''
+Outputs error information
+    @value: value to display
+'''
 def ERR(value):
     sys.stderr.write("ERROR: " + str(value) + "\n")
 
+'''
+Prints all configurable values
+'''
 def print_argument_values():
     VERBOSE("args.verbose          = [" + str(args.verbose) + "]")
     VERBOSE("args.hard_coded       = [" + str(args.hard_coded) + "]")
@@ -51,12 +70,19 @@ def print_argument_values():
     VERBOSE("args.external_hosts   = [" + str(args.external_hosts) + "]")
     VERBOSE("args.destination_file = [" + str(args.destination_file) + "]")
 
+'''
+Gets a temporary file
+'''
 def get_temp_file():
-    tmp_file_path = tempfile.mkstemp()[1]
-    VERBOSE("Temporary hosts file: " + tmp_file_path)
+    result = tempfile.mkstemp()[1]
+    VERBOSE("Temporary hosts file: " + result)
+    return open(result, "w+")
 
-    return open(tmp_file_path, "w+")
-
+'''
+Writes the section header
+    @destination: stream to write to
+    @title: section title
+'''
 def write_section_title(destination,  title):
     INFO("Adding " + title + "...")
 
@@ -65,19 +91,39 @@ def write_section_title(destination,  title):
     destination.write("\n")
     destination.write("#\n")
 
-
+'''
+Writes a hosts file entry
+    @destination: stream to write to
+    @hostname: name of the host to bind to an ip
+    @ipvalue: value to bind the host to
+'''
 def write_entry(destination, hostname, ipvalue):
     destination.write(ipvalue)
     destination.write("\t")
     destination.write(hostname.lower())
     destination.write("\n")
 
+'''
+Reports a duplicate host
+    @hostname: name of the duplicate host
+    @source: first duplicate mentioning location
+'''
 def report_dupe_host(hostname, source):
     WARN("Duplicate host '" + hostname + "' (duplicate in " + source + " hosts)")
 
+'''
+Returns whether or not the line should/can be ignored
+    @line: line to validate
+'''
 def ignore_line(line):
     return line == "" or line[0] == '#'
 
+'''
+Ensures the local hosts are in the hosts file with local addresses
+    @source: local host entries
+    @destination: stream to write to
+    @hosts: set of hosts that keeps track of which hosts have already been seen
+'''
 def append_local_hosts(source, destination, hosts):
     write_section_title(destination, "Local Hosts")
 
@@ -89,6 +135,12 @@ def append_local_hosts(source, destination, hosts):
                     write_entry(destination, hostname, local_address)
             hosts.add(line)
 
+'''
+Ensures all untrusted hosts are sinkholed
+    @source: untrusted host entries
+    @destination: stream to write to
+    @hosts: set of hosts that keeps track of which hosts have already been seen
+'''
 def append_untrusted_hosts(source, destination, hosts):
     write_section_title(destination, "Untrusted Hosts")
 
@@ -101,6 +153,14 @@ def append_untrusted_hosts(source, destination, hosts):
             else:
                 report_dupe_host(hostname, "untrusted")
 
+'''
+Creates all entries that are tied to either the sinkhole or a real address
+    @name: section name
+    @source: external or hard coded host entries
+    @destination: stream to write to
+    @hosts: set of hosts that keeps track of which hosts have already been seen
+    @use_sinkhole: whether the target address is the sinkhole or the one specified by the entry
+'''
 def process_tuple_file(name, source, destination, hosts, use_sinkhole):
     write_section_title(destination, name + " Hosts")
     for entry in source:
@@ -129,6 +189,9 @@ def process_tuple_file(name, source, destination, hosts, use_sinkhole):
             else:
                 exit("The " + name + " hosts file contains an incorrectly formed line \"" + entry[:len(entry) - 2] + "\"")
 
+'''
+Entry point
+'''
 def main():
     print_argument_values()
     tmp_file = get_temp_file()
