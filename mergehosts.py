@@ -20,12 +20,16 @@ SINKHOLE = "0.0.0.0"
 LOCALADDRESSES = set(["127.0.0.1", "::1"])
 LOCALHOSTS = set(["localhost", socket.gethostname()])
 
+default_destination = "/tmp/mergehosts.whatif"
+if os.name == "nt":
+    default_destination = "%TMP%\\mergehosts.whatif"
+
 parser = argparse.ArgumentParser(description="MergeHosts merges a hosts file with local, hard-coded and untrusted hosts")
 parser.add_argument("-v", "--verbose", help="Defines the verbosity level", action="count", default=0)
 parser.add_argument("-u", "--untrusted", metavar="<untrusted>", help="Untrusted hosts file containing one hostname per line (default value=untrusted.hosts)", type=argparse.FileType('rt'), default="untrusted.hosts", dest="untrusted_hosts")
 parser.add_argument("-hc", "--hard", metavar="<hard>", help="Hard coded hosts file formatted as <ip> <hostname> (default value=hardcoded.hosts)", type=argparse.FileType('rt'), default="hardcoded.hosts", dest="hard_coded")
 parser.add_argument("-e",  "--external", metavar="<external>", help="File containing the external hosts formatted as <ip> <hostname>", type=argparse.FileType('rt'), default="hosts.txt", dest="external_hosts")
-parser.add_argument("-d", "--destination", metavar="<dest>", help="Destination file (default value=/tmp/mergehosts.whatif)", default="/tmp/mergehosts.whatif", type=argparse.FileType('wt+'), dest="destination_file")
+parser.add_argument("-d", "--destination", metavar="<dest>", help="Destination file (default value=" + default_destination + ")", default=default_destination, type=argparse.FileType('wt+'), dest="destination_file")
 parser.add_argument('--version', action='version', version='%(prog)s 0.1')
 args = parser.parse_args()
 
