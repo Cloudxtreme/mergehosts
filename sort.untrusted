@@ -1,0 +1,3 @@
+#!/bin/bash
+grep -v ^# untrusted.hosts | grep . | sort | uniq
+
