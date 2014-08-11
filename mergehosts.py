@@ -155,9 +155,9 @@ def main():
     process_tuple_file("External", args.external_hosts, tmpFile, hosts, True)
     args.external_hosts.close()
 
-    tmpFile.close()
-
     INFO(str(len(hosts)) + " host entries...")
+    tmpFile.write("# This file contains " + str(len(hosts)) + " host entries...\n")
+    tmpFile.close()
 
     # commit the content
     shutil.copyfile(tmpFile.name, args.destination_file.name)
