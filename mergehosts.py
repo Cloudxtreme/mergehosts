@@ -28,14 +28,25 @@ parser.add_argument("-d", "--destination", metavar="<dest>", help="Destination f
 parser.add_argument('--version', action='version', version='%(prog)s 0.1')
 args = parser.parse_args()
 
-def print_argument_values():
+def VERBOSE(value):
     if args.verbose >= VERBOSITY_VERBOSE:
-        print "args.verbose = [", args.verbose, "]"
-        print "args.local_hosts = [", args.local_hosts, "]"
-        print "args.untrusted_hosts = [", args.untrusted_hosts, "]"
-        print "args.hard_coded = [", args.hard_coded, "]"
-        print "args.external_hosts = [", args.external_hosts, "]"
-        print "args.destination_file = [", args.destination_file, "]"
+        print value
+
+def INFO(value):
+    if args.verbose >= VERBOSITY_INFO:
+        print value
+
+def WARN(value):
+    if args.verbose >= VERBOSITY_WARN:
+        print value
+
+def print_argument_values():
+    VERBOSE("args.verbose          = [" + str(args.verbose) + "]")
+    VERBOSE("args.local_hosts      = [" + str(args.local_hosts) + "]")
+    VERBOSE("args.untrusted_hosts  = [" + str(args.untrusted_hosts) + "]")
+    VERBOSE("args.hard_coded       = [" + str(args.hard_coded) + "]")
+    VERBOSE("args.external_hosts   = [" + str(args.external_hosts) + "]")
+    VERBOSE("args.destination_file = [" + str(args.destination_file) + "]")
 
 def get_temp_file():
     keepTrying = True
@@ -45,14 +56,12 @@ def get_temp_file():
         tmp_file_path = "/tmp/mergehosts" + str(time.time()).replace('.', '') + ".hosts"
         keepTrying = os.path.isfile(tmp_file_path)
 
-    if args.verbose >= VERBOSITY_VERBOSE:
-        print "Temporary hosts file: " + tmp_file_path
+    VERBOSE("Temporary hosts file: " + tmp_file_path)
 
     return open(tmp_file_path, "w+")
 
 def write_section_title(destination,  title):
-    if args.verbose >= VERBOSITY_INFO:
-        print "Adding " + title + "..."
+    INFO("Adding " + title + "...")
 
     destination.write("#\n# ")
     destination.write(title)
@@ -112,8 +121,7 @@ def append_external_hosts(destination, untrusted):
                     write_entry(destination, line, SINKHOLE)
                     untrusted[line] = 1
                 else:
-                    if args.verbose >= VERBOSITY_WARN:
-                        print "Duplicate external host: " + line
+                    WARN("Duplicate external host: " + line)
 
     args.external_hosts.close()
 
