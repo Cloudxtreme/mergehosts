@@ -119,7 +119,7 @@ def report_dupe_host(hostname, source):
 Returns whether or not the line should/can be ignored
     @line: line to validate
 '''
-def ignore_line(line):
+def can_ignore_line(line):
     return line == "" or line[0] == '#'
 
 '''
@@ -133,7 +133,7 @@ def append_local_hosts(source, destination, hosts):
 
     for line in source:
         hostname = line.strip()
-        if ignore_line(hostname) == False:
+        if can_ignore_line(hostname) == False:
             if not hostname in hosts:
                 for local_address in LOCALADDRESSES:
                     write_entry(destination, hostname, local_address)
@@ -150,7 +150,7 @@ def append_untrusted_hosts(source, destination, hosts):
 
     for line in source:
         hostname = line.strip()
-        if ignore_line(hostname) == False:
+        if can_ignore_line(hostname) == False:
             if not hostname in hosts:
                 write_entry(destination, hostname, SINKHOLE)
                 hosts.add(hostname)
