@@ -2,6 +2,8 @@
 # ------------------------
 # Add untrusted hosts to this file with one host per line:
 # <hostname>
+ad5.netshelter.net
+microsoftsto.112.2o7.net
 mi-reroute.fbcdn.net
 origincache-frc.fbcdn.net
 profile.facebook.com
@@ -10,4 +12,3 @@ star.c10r.facebook.com
 static.adzerk.net
 stats.dice.com
 www.facebook.com
-ad5.netshelter.net
