@@ -7,24 +7,24 @@ I wrote this script that lets you maintain your own set of untrusted, hard coded
 By default, the script dumps its output to /tmp/mergehosts.whatif so that you may inspect the file before committing it to your /etc/hosts file. (but if so desired, you can instruct the script to immedately overwrite your /etc/hosts file as well)
 
 	$ ./mergehosts.py -h
-	usage: mergehosts.py [-h] [-v] [-u &lt;untrusted&gt;] [-hc &lt;hard&gt;] [-e &lt;external&gt;]
-        	             [-d &lt;dest&gt;] [--version]
+	usage: mergehosts.py [-h] [-v] [-u <untrusted>] [-hc <hard>] [-e <external>]
+        	             [-d <dest>] [--version]
 	
 	MergeHosts merges a hosts file with local, hard-coded and untrusted hosts
 	
 	optional arguments:
 	  -h, --help            show this help message and exit
 	  -v, --verbose         Defines the verbosity level
-	  -u &lt;untrusted&gt;, --untrusted &lt;untrusted&gt;
+	  -u <untrusted>, --untrusted <untrusted>
 	                        Untrusted hosts file containing one hostname per line
 	                        (default value=untrusted.hosts)
-	  -hc &lt;hard&gt;, --hard &lt;hard&gt;
-	                        Hard coded hosts file formatted as &lt;ip&gt; &lt;hostname&gt;
+	  -hc <hard>, --hard <hard>
+	                        Hard coded hosts file formatted as <ip> <hostname>
 	                        (default value=hardcoded.hosts)
-	  -e &lt;external&gt;, --external &lt;external&gt;
-	                        File containing the external hosts formatted as &lt;ip&gt;
-	                        &lt;hostname&gt;
-	  -d &lt;dest&gt;, --destination &lt;dest&gt;
+	  -e <external>, --external <external>
+	                        File containing the external hosts formatted as <ip>
+	                        <hostname>
+	  -d <dest>, --destination <dest>
 	                        Destination file (default
                         	value=/tmp/mergehosts.whatif)
 	  --version             show program's version number and exit
