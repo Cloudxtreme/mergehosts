@@ -10,9 +10,11 @@ By default, the script dumps its output to /tmp/mergehosts.whatif so that you ma
 $ ./mergehosts.py -h
 usage: mergehosts.py [-h] [-v] [-u %lt;untrusted%gt;] [-hc %lt;hard%gt;] [-e %lt;external%gt;]
                      [-d %lt;dest%gt;] [--version]
-
+</code>
+<code>
 MergeHosts merges a hosts file with local, hard-coded and untrusted hosts
-
+</code>
+<code>
 optional arguments:
   -h, --help            show this help message and exit
   -v, --verbose         Defines the verbosity level
