@@ -2,13 +2,16 @@
 # ------------------------
 # Add untrusted hosts to this file with one host per line:
 # <hostname>
+1.gravatar.com
 ad5.netshelter.net
 cdn.feedbackify.com
 cloud.opta.net
 connect.facebook.net
 c.pebblemedia.be
+data-vocabulary.org
 escape.insites.eu
 fonts.googleapis.com
+gravatar.com
 linkedin.com
 media.licdn.com
 microsoftsto.112.2o7.net
