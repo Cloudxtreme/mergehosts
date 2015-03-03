@@ -3,6 +3,7 @@
 # Add untrusted hosts to this file with one host per line:
 # <hostname>
 1.gravatar.com
+a.disquscdn.com
 ad5.netshelter.net
 bbc.ivwbox.de
 cdn.feedbackify.com
@@ -10,11 +11,13 @@ cloud.opta.net
 connect.facebook.net
 c.statcounter.com
 data-vocabulary.org
+disqus.com
 emp.bbci.co.uk
 escape.insites.eu
 facebook.com
 facebook.net
 fonts.googleapis.com
+fonts.gstatic.com
 geoip.ubuntu.com
 graph.facebook.com
 gravatar.com
@@ -34,11 +37,14 @@ pool.pebblemedia.adhese.com
 profile.facebook.com
 siterecruit.comscore.com
 star.c10r.facebook.com
+static.ak.facebook.com
 static.licdn.com
 stats.dice.com
+sw-x.adduplex.com
 tps.bbc.com
 twitter.com
 widget.cloud.opta.net
+www.disqus.com
 www.facebook.com
 www.facebook.net
 www.linkedin.com
