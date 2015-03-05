@@ -3,8 +3,8 @@
 # Add untrusted hosts to this file with one host per line:
 # <hostname>
 1.gravatar.com
-a.disquscdn.com
 ad5.netshelter.net
+a.disquscdn.com
 bbc.ivwbox.de
 cdn.feedbackify.com
 cloud.opta.net
@@ -24,6 +24,7 @@ gravatar.com
 ichef.bbci.co.uk
 linkedin.com
 media.licdn.com
+media.linkedin.com
 me-ssl.effectivemeasure.net
 microsoftsto.112.2o7.net
 mi-reroute.fbcdn.net
