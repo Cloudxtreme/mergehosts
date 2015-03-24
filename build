@@ -1,7 +1,7 @@
 # !/bin/bash
 if [ -z "$1" ]
 then
-	echo "$0 <directory>"
+	echo "Usage: $0 <directory>"
 	echo ""
 	echo "<directory>	Directory containing hosts file in the name format hosts.*.txt"
 	exit
