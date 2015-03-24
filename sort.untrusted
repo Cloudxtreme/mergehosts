@@ -2,6 +2,6 @@
 src=untrusted.hosts
 temp=/tmp/mergehosts.sorted
 head -n 4 "$src" > "$temp"
-grep -v ^# "$src" | grep . | sort | uniq >> "$temp"
+grep -v ^# "$src" | grep "\." | sort | uniq >> "$temp"
 cat "$temp" > "$src"
 rm -f "$temp"
