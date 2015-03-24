@@ -1,0 +1,22 @@
+# !/bin/bash
+if [ -z "$1" ]
+then
+	echo "$0 <directory>"
+	echo ""
+	echo "<directory>	Directory containing hosts file in the name format hosts.*.txt"
+	exit
+fi
+
+tmp_concat=/tmp/mergehosts.concat
+tmp_uniq=$tmp_concat.uniq
+echo Combining hosts files
+for hosts_file in `ls $1/hosts.*.txt`
+do
+	echo "   - $hosts_file"
+	cat "$hosts_file" | grep -v "#" | sed s/127.0.0.1/0.0.0.0/ | sed s/\\t/\ / >> "$tmp_concat"
+done;
+echo Uniqueing and sorting the combined file
+cat "$tmp_concat" | sort | uniq > "$tmp_uniq"
+echo Merging hosts instructions into the whatif file
+./mergehosts.py -e "$tmp_uniq" -vv
+rm -f "$tmp_concat" "$tmp_uniq"
