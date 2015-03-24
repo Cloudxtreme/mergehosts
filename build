@@ -6,7 +6,6 @@ then
 	echo "<directory>	Directory containing hosts file in the name format hosts.*.txt"
 	exit
 fi
-
 tmp_concat=/tmp/mergehosts.concat
 tmp_uniq=$tmp_concat.uniq
 echo Combining hosts files
@@ -17,6 +16,8 @@ do
 done;
 echo Uniqueing and sorting the combined file
 cat "$tmp_concat" | sort | uniq > "$tmp_uniq"
+echo Sorting the untrusted file
+./sort.untrusted
 echo Merging hosts instructions into the whatif file
 ./mergehosts.py -e "$tmp_uniq" -vv
 rm -f "$tmp_concat" "$tmp_uniq"
