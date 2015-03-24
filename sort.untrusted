@@ -4,4 +4,4 @@ temp=/tmp/mergehosts.sorted
 head -n 4 "$src" > "$temp"
 grep -v ^# "$src" | grep . | sort | uniq >> "$temp"
 cat "$temp" > "$src"
-rm "$temp"
+rm -f "$temp"
