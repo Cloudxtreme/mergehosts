@@ -4,11 +4,15 @@ then
 	echo "Usage: $0 <directory>"
 	echo ""
 	echo "<directory>	Directory containing hosts file in the name format hosts.*.txt"
-	exit
+	exit 1
 fi
-
+# Grab latest version
+#####################
 echo Grabbing latest http://winhelp2002.mvps.org/hosts.txt
 curl -# http://winhelp2002.mvps.org/hosts.txt > "$1/hosts.mvps.txt"
+./getlatesthphosts "$1"
+# Process the data
+##################
 tmp_concat=/tmp/mergehosts.concat
 tmp_uniq=$tmp_concat.uniq
 echo Combining hosts files

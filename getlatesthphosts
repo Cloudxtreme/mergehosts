@@ -1,0 +1,32 @@
+#!/bin/bash
+if [ -z "$1" ]
+then
+	echo "Usage: $0 <directory>"
+	echo ""
+	echo "<directory>	Directory containing hosts file in the name format hosts.*.txt"
+	exit 1
+fi
+tmp_zipfile=/tmp/mergehosts.$RANDOM
+echo Grabbing latest http://hosts-file.net/download/hosts.zip \($tmp_zipfile\)
+curl -# "http://hosts-file.net/download/hosts.zip" > $tmp_zipfile
+###########################
+echo Unzipping $tmp_zipfile
+tmp_unzippeddir=$tmp_zipfile.unzipped
+mkdir "$tmp_unzippeddir"
+unzip $tmp_zipfile -d "$tmp_unzippeddir"
+###########################
+echo Verifying signature
+gpg2 --verify "$tmp_unzippeddir/hosts.txt.asc" 2>/dev/null 1> /dev/null
+if [ $? -eq 0 ]
+then
+	echo GOOD Signature on hosts file
+else
+	echo BAD Signature for hosts file
+	exit 1
+fi
+###########################
+echo Moving hosts file to target directory
+mv "$tmp_unzippeddir/hosts.txt" "$1/hosts.hphosts.txt"
+###########################
+echo Removing temporary files
+rm -r "$tmp_unzippeddir" "$tmp_zipfile"
