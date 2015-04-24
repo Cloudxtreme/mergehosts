@@ -6,6 +6,12 @@ then
 	echo "<directory>	Directory containing hosts file in the name format hosts.*.txt"
 	exit 1
 fi
+# Make sure storage is available
+if [ ! -e "$1" ]
+then
+	echo Creating "$1"...
+	mkdir "$1"
+fi
 # Grab latest version
 #####################
 echo Grabbing latest http://winhelp2002.mvps.org/hosts.txt
