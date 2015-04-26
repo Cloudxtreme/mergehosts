@@ -32,5 +32,5 @@ cat "$tmp_concat" | sort | uniq > "$tmp_uniq"
 echo Sorting the untrusted file
 ./sort.untrusted
 echo Merging hosts instructions into the whatif file
-./mergehosts.py -e "$tmp_uniq" -vv
+./mergehosts.py -e "$tmp_uniq" -d "$1/mergehosts.whatif" -vv
 rm -f "$tmp_concat" "$tmp_uniq"
