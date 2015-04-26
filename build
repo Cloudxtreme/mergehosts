@@ -14,23 +14,28 @@ then
 fi
 # Grab latest version
 #####################
-echo "Grabbing latest http://winhelp2002.mvps.org/hosts.txt"
-curl -# "http://winhelp2002.mvps.org/hosts.txt" > "$1/hosts.mvps.txt"
-echo "Grabbing latest http://pgl.yoyo.org/as/serverlist.php?hostformat=hosts&showintro=1&mimetype=plaintext"
-curl -# "http://pgl.yoyo.org/as/serverlist.php?hostformat=hosts&showintro=1&mimetype=plaintext" > "$1/hosts.peter.lowe.txt"
+curlable=(
+		"http://winhelp2002.mvps.org/hosts.txt"
+		"http://pgl.yoyo.org/as/serverlist.php?hostformat=hosts&showintro=1&mimetype=plaintext"
+)
+for ix in ${!curlable[*]}
+do
+	echo "Grabbing latest from ${curlable[$ix]}..."
+	curl -# "${curlable[$ix]}" > "$1/hosts.$ix.txt"
+done
 ./getlatesthphosts "$1"
 # Process the data
 ##################
 tmp_concat=/tmp/mergehosts.concat
 tmp_uniq=$tmp_concat.uniq
-echo Combining hosts files
+echo Combining hosts files into "$tmp_concat"
 for hosts_file in `ls $1/hosts.*.txt`
 do
 	echo "   - $hosts_file"
-	cat "$hosts_file" | grep -v "#" | sed s/127.0.0.1/0.0.0.0/ | sed s/\\t/\ / >> "$tmp_concat"
+	grep -v "#" "$hosts_file" | sed 's/127.0.0.1/0.0.0.0/' | sed 's/\t/ /' >> "$tmp_concat"
 done;
-echo Uniqueing and sorting the combined file
-cat "$tmp_concat" | sort | uniq > "$tmp_uniq"
+echo Uniqueing "$tmp_concat" and sorting the combined file info "$tmp_uniq"
+sort "$tmp_concat" --ignore-case --unique | uniq --ignore-case > "$tmp_uniq"
 echo Sorting the untrusted file
 ./sort.untrusted
 echo Merging hosts instructions into the whatif file
