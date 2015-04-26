@@ -7,25 +7,27 @@ then
 	exit 1
 fi
 tmp_zipfile=/tmp/mergehosts.$RANDOM
-echo "Grabbing latest http://hosts-file.net/download/hosts.zip \($tmp_zipfile\)"
+echo "Grabbing latest http://hosts-file.net/download/hosts.zip ($tmp_zipfile)"
 curl -# "http://hosts-file.net/download/hosts.zip" > $tmp_zipfile
 ###########################
-echo Unzipping $tmp_zipfile
 tmp_unzippeddir=$tmp_zipfile.unzipped
+echo "Unzipping ""$tmp_zipfile"" to ""$tmp_unzippeddir"""
 mkdir "$tmp_unzippeddir"
 unzip $tmp_zipfile -d "$tmp_unzippeddir"
 ###########################
-echo "Verifying signature"
+echo "Verifying signature in ""$tmp_unzippeddir/hosts.txt.asc"""
 gpg2 --verify "$tmp_unzippeddir/hosts.txt.asc" 2>/dev/null 1> /dev/null
 if [ $? -eq 0 ]
 then
-	echo "OK: GOOD Signature on hosts file"
+	echo "OK: GOOD Signature in ""$tmp_unzippeddir/hosts.txt.asc"""
 else
+	echo "FAIL"
 	echo "FAIL: BAD Signature for hosts file, it cannot be trusted!!"
+	echo "FAIL"
 	exit 1
 fi
 ###########################
-echo "Moving hosts file to target directory"
+echo "Moving hosts file ""$tmp_unzippeddir/hosts.txt"" into target directory ""$1/hosts.hphosts.txt"""
 mv "$tmp_unzippeddir/hosts.txt" "$1/hosts.hphosts.txt"
 ###########################
 echo "Removing temporary files"
