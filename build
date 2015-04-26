@@ -24,6 +24,11 @@ do
 	curl -# "${curlable[$ix]}" > "$1/hosts.$ix.txt"
 done
 ./getlatesthphosts "$1"
+if [ ! $? -eq 0 ]
+then
+	echo "ERROR: A valid hphosts file could not be retrieved!"
+	exit 1
+fi
 # Process the data
 ##################
 tmp_concat=/tmp/mergehosts.concat
@@ -36,8 +41,8 @@ do
 done;
 echo Uniqueing "$tmp_concat" and sorting the combined file info "$tmp_uniq"
 sort "$tmp_concat" --ignore-case --unique | uniq --ignore-case > "$tmp_uniq"
-echo Sorting the untrusted file
+echo "Sorting the untrusted file"
 ./sort.untrusted
-echo Merging hosts instructions into the whatif file
+echo "Merging hosts instructions into the whatif file"
 ./mergehosts.py -e "$tmp_uniq" -d "$1/mergehosts.whatif" -vv
 rm -f "$tmp_concat" "$tmp_uniq"
