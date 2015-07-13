@@ -17,6 +17,7 @@ fi
 curlable=(
 		"http://winhelp2002.mvps.org/hosts.txt"
 		"http://pgl.yoyo.org/as/serverlist.php?hostformat=hosts&showintro=1&mimetype=plaintext"
+		"http://someonewhocares.org/hosts/hosts"
 )
 for ix in ${!curlable[*]}
 do
