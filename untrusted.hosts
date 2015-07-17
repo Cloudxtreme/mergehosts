@@ -15,6 +15,7 @@ api.accounts.firefox.com
 aus3.mozilla.org
 aus4.mozilla.org
 auth.services.mozilla.com
+autoupdate.geo.opera.com
 bbc.ivwbox.de
 cache.vzw.com
 c.amazon-adsystem.com
@@ -38,6 +39,8 @@ fb.com
 fonts.googleapis.com
 fonts.gstatic.com
 geoip.ubuntu.com
+geo.opera.com
+github.map.fastly.net
 googleadapis.l.google.com
 google-analytics.com
 graph.facebook.com
@@ -81,6 +84,8 @@ scache.vzw.com
 secure.gravatar.com
 services.mozilla.com
 setup.services.mozilla.com
+sitecheck2.geo.opera.com
+sitecheck.geo.opera.com
 siterecruit.comscore.com
 snappyads.biz
 snippits.cdn.mozilla.net
